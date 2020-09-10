@@ -1,19 +1,15 @@
 const CustomError = require("../extensions/custom-error");
 
 const actions = ['--discard-prev', '--discard-next', '--double-prev', '--double-next'];
+const DONE_ACTION = '--done-action';
 
 module.exports = function transform(arr) {
   if (arr.length === 0) return [];
   if (!Array.isArray(arr)) throw new Error();
 
-  transformArray(arr);
-  // let position = null;
-  // const actionName = arr.find((item, index) => {
-  //   position = index;
-  //   return actions.includes(item)
-  // });
-  // return [position, actionName];
-  return cleanResultArray(arr);
+  const copyArray = [...arr];
+  transformArray(copyArray);
+  return cleanResultArray(copyArray);
 };
 
 function transformArray(arr) {
@@ -24,54 +20,47 @@ function transformArray(arr) {
   });
 
   if (!actionName) return;
-  const action = getAction(actionName, position);
-  action(arr);
-  return transformArray(arr);
+  doAction(actionName, position, arr);
+  transformArray(arr);
 }
 
-function getAction(actionName, posision) {
+function cleanResultArray(arr) {
+  return arr.filter((item) => item !== DONE_ACTION);
+}
+
+function doAction(actionName, posision, arr) {
   switch (actionName) {
-    case '--discard-prev': return getDiscardPrev(posision);
-    case '--discard-next': return getDiscardNext(posision);
-    case '--double-prev': return getDoublePrev(posision);
-    case '--double-next': return getDoubleNext(posision);
+    case '--discard-prev': return discardPrev(posision, arr);
+    case '--discard-next': return discardNext(posision, arr);
+    case '--double-prev': return doublePrev(posision, arr);
+    case '--double-next': return doubleNext(posision, arr);
   }
-}
-
-function cleanResultArray(numberArray) {
-  return numberArray.filter((item) => !actions.includes(item));
 }
 
 /** actions */
-function getDiscardPrev(position) {
-  return (arr) => {
-    if (position === 0) return;
-    const prevPosition = position - 1;
-    arr.splice(prevPosition, 2);
-  }
+function discardPrev(position, arr) {
+  if (position === 0) return setDoneAction(arr, position);
+  const prevPosition = position - 1;
+  arr.splice(prevPosition, 2, DONE_ACTION);
 }
 
-function getDiscardNext(position) {
-  return (arr) => {
-    if (position >= arr.length) return;
-    arr.splice(position, 2);
-  }
+function discardNext(position, arr) {
+  if (position + 1 === arr.length) return setDoneAction(arr, position);
+  arr.splice(position, 2, DONE_ACTION);
 }
 
-function getDoublePrev(position) {
-  return (arr) => {
-    if (position === 0) return;
-    const prevPosition = position - 1;
-    const doubleNumber = arr[prevPosition];
-    arr.splice(position, 1, doubleNumber);
-  }
+function doublePrev(position, arr) {
+  if (position === 0) return setDoneAction(arr, position);
+  const doubleNumber = arr[position - 1];
+  arr.splice(position, 1, doubleNumber, DONE_ACTION);
 }
 
-function getDoubleNext(position) {
-  return (arr) => {
-    if (position >= arr.length) return;
-    const nextPosition = position + 1;
-    const doubleNumber = arr[nextPosition];
-    arr.splice(position, 1, doubleNumber);
-  }
+function doubleNext(position, arr) {
+  if (position + 1 === arr.length) return setDoneAction(arr, position);
+  const doubleNumber = arr[position + 1];
+  arr.splice(position, 1, DONE_ACTION, doubleNumber);
+}
+
+function setDoneAction(arr, position) {
+  arr.splice(position, 1, DONE_ACTION);
 }
