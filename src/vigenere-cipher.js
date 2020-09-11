@@ -7,11 +7,13 @@ class VigenereCipheringMachine {
 
   /** public mehtods */
   encrypt(message, key) {
+    throw new CustomError('Not implemented');
     if (this._isAdsenceParams(message, key)) throw new Error();
     
     return this._transformResult(result);
   }    
   decrypt(encryptedMessage, key) {
+    throw new CustomError('Not implemented');
     if (this._isAdsenceParams(encryptedMessage, key)) throw new Error();
     
     return this._transformResult(result);
