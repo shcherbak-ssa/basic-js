@@ -1,12 +1,5 @@
 const CustomError = require("../extensions/custom-error");
 
-const defaultOptions = {
-  separator: '+',
-  repeatTimes: 1,
-  additionSeparator: '|',
-  additionRepeatTimes: 1
-};
-
 module.exports = function repeater(str, options) {
   const repeatString = checkRepeatString(str);
   const repeatOptions = checkRepeatOptions(options);
