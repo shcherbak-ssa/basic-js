@@ -10,5 +10,5 @@ function calculateTurns(disksNumber) {
   return Math.pow(2, disksNumber) - 1;
 }
 function calculateSeconds(turns, turnsSpeed) {
-  return Math.floor((3600 / turnsSpeed) * turns);
+  return Math.floor(turns / (turnsSpeed / 3600));
 } 
